@@ -20,11 +20,6 @@ jobs:
       #    # terraform_version: 0.13.0
       #    cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Configure AWS Credentials 🔧
-        uses: aws-actions/configure-aws-credentials@v1.6.1 # Version at the time of this writing
-        with: # We are loading keys stored in secrets
-          
-
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
