@@ -23,9 +23,7 @@ jobs:
       - name: Configure AWS Credentials 🔧
         uses: aws-actions/configure-aws-credentials@v1.6.1 # Version at the time of this writing
         with: # We are loading keys stored in secrets
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          
 
       - name: Terraform Format
         id: fmt
@@ -34,6 +32,10 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
      
       - name: Terraform Validate
         id: validate
@@ -42,6 +44,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
@@ -82,3 +88,7 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
