@@ -10,15 +10,20 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-        with:
-          # terraform_version: 0.13.0
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        #with:
+        #  # terraform_version: 0.13.0
+        #  cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Format
         id: fmt
@@ -27,6 +32,9 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
            
       - name: Terraform Validate
         id: validate
@@ -35,6 +43,9 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
@@ -74,4 +85,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform apply -auto-approve -input=false
