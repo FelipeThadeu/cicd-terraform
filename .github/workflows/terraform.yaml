@@ -16,9 +16,9 @@ jobs:
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-      #  with:
-      #    # terraform_version: 0.13.0
-      #    cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        with:
+          # terraform_version: 0.13.0
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Format
         id: fmt
@@ -27,12 +27,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-        env:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token-key: ${{ secrets.AWS_SESSION_TOKEN_ID }}
-          aws-region: eu-west-1
-     
+           
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
@@ -40,11 +35,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        env:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token-key: ${{ secrets.AWS_SESSION_TOKEN_ID }}
-          aws-region: eu-west-1
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
@@ -85,8 +75,3 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
-        env:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token-key: ${{ secrets.AWS_SESSION_TOKEN_ID }}
-          aws-region: eu-west-1
